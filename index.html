@@ -1,0 +1,1367 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>All The Day Group Ads</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+/* Ads dashboard — tokens first, light + dark (OS or toggle). Same design language as the CM report. */
+:root {
+  color-scheme: light;
+  --bg: #f7f9ff; --bg-glow: #e3ecff; --surface: #ffffff; --surface-2: #f5f8fe;
+  --border: #e3e9f5; --grid: #edf1f8; --ink: #141416; --ink-2: #4c5160; --muted: #838a99;
+  --brand: #2e6ff2;          /* Meta Ads series + headline numbers */
+  --brand-tint: #e8f0fe;
+  --series2: #eb6834;        /* Google Ads series */
+  --line: #e5383b;           /* conversions line */
+  --line2: #8b5cf6;          /* Google calls */
+  --good: #12795a; --bad: #c0261c; --warn: #a86a00;
+  --shadow: 0 1px 2px rgba(20, 10, 10, .04), 0 12px 32px rgba(20, 50, 120, .07);
+  font-family: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111318; --bg-glow: #142040; --surface: #1a1c22; --surface-2: #21242c;
+    --border: #2b2f3a; --grid: #272a33; --ink: #f3f4f7; --ink-2: #c3c7d1; --muted: #8b91a0;
+    --brand: #5b8ff7; --brand-tint: #1a2440; --series2: #d9632d; --line: #f05a5c; --line2: #9474f0; --good: #4cc39a; --bad: #ff7a70; --warn: #e0a640;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111318; --bg-glow: #142040; --surface: #1a1c22; --surface-2: #21242c;
+  --border: #2b2f3a; --grid: #272a33; --ink: #f3f4f7; --ink-2: #c3c7d1; --muted: #8b91a0;
+  --brand: #5b8ff7; --brand-tint: #1a2440; --series2: #d9632d; --line: #f05a5c; --line2: #9474f0; --good: #4cc39a; --bad: #ff7a70; --warn: #e0a640;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.25);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; } /* beats the flex/grid display of .filters, .kpis, cards */
+body { margin: 0; color: var(--ink); background: radial-gradient(1200px 600px at 100% 0%, var(--bg-glow), transparent 70%), var(--bg); }
+.page { max-width: 1480px; margin: 0 auto; padding-block: 32px 48px;
+  padding-left: max(clamp(16px, 3vw, 44px), env(safe-area-inset-left, 0px));
+  padding-right: max(clamp(16px, 3vw, 44px), env(safe-area-inset-right, 0px)); }
+h1, h2, p { margin: 0; }
+.muted { color: var(--muted); } .small { font-size: 12px; }
+
+/* ---------- hero ---------- */
+.hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 22px; }
+.eyebrow { font-size: clamp(15px, 1.6vw, 20px); font-weight: 800; letter-spacing: -.01em; color: var(--ink-2); }
+.hero h1 { font-size: clamp(34px, 5vw, 64px); line-height: 1.05; font-weight: 800; color: var(--brand); letter-spacing: -.03em; margin-top: 2px; }
+.hero-sub { margin-top: 10px; color: var(--ink-2); font-size: 14px; }
+.hero-sub b { color: var(--ink); }
+.warn { margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--warn); }
+.theme-btn, .icon-btn { flex: none; font: inherit; font-size: 18px; width: 44px; height: 44px; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); cursor: pointer; }
+
+/* ---------- filters ---------- */
+.filters { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: flex-end; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; box-shadow: var(--shadow); padding: 16px 18px; margin-bottom: 16px; }
+.field { display: grid; gap: 6px; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; min-width: 0; }
+.field.grow { flex: 1 1 260px; }
+select, input[type="date"], input[type="search"] { font: inherit; font-size: 14px; font-weight: 600; color: var(--ink); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 10px; min-height: 40px; padding: 0 12px; width: 100%; text-transform: none; letter-spacing: 0; }
+.date-row { display: flex; align-items: center; gap: 8px; }
+.date-row input { width: 150px; }
+.seg { display: inline-flex; flex-wrap: wrap; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { font: inherit; font-size: 13px; font-weight: 600; color: var(--ink-2); background: none; border: 0; border-radius: 8px; padding: 0 12px;
+  min-height: 32px; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.seg button.on { background: var(--surface); color: var(--brand); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+select:focus-visible, input:focus-visible, button:focus-visible, th:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 35%, transparent); outline-offset: 2px; }
+
+/* ---------- KPI tiles ---------- */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px; min-width: 0; }
+.kpi .lbl { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.kpi .val { font-size: clamp(24px, 2.4vw, 34px); font-weight: 800; color: var(--brand); letter-spacing: -.02em; margin: 4px 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi .sub { font-size: 12px; color: var(--muted); }
+.delta { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--surface-2); color: var(--ink-2); }
+.delta.good { color: var(--good); } .delta.bad { color: var(--bad); }
+
+/* ---------- cards ---------- */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 16px; min-width: 0; }
+.card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.card h2 { font-size: 17px; font-weight: 800; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend i.ln { height: 3px; border-radius: 2px; vertical-align: 3px; }
+.chart-box { position: relative; height: 260px; }
+.chart-box.tall { height: 330px; }
+
+/* ---------- Google Maps actions ---------- */
+.minis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.mini { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.mini .lbl { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+.mini .val { font-size: 24px; font-weight: 800; letter-spacing: -.02em; margin: 2px 0; }
+.mini .sub { font-size: 11px; color: var(--muted); }
+.mini .delta { margin-top: 4px; }
+.mini.key .val { color: var(--series2); }
+.mini.total { border-color: color-mix(in srgb, var(--series2) 45%, var(--border)); }
+.mini.dim .val { color: var(--muted); }
+#gmaps-card .legend { margin-bottom: 8px; }
+
+/* ---------- Google vs Meta ---------- */
+.compare-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+.share { display: grid; gap: 14px; }
+.share-row .lbl { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 5px; }
+.share-bar { display: flex; height: 26px; border-radius: 8px; overflow: hidden; background: var(--surface-2); }
+.share-bar span { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; min-width: 0; white-space: nowrap; overflow: hidden; }
+.share-bar .g { background: var(--series2); } .share-bar .m { background: var(--brand); }
+.notice { padding: 12px 14px; border-radius: 12px; background: var(--brand-tint); color: var(--ink-2); font-size: 13px; line-height: 1.5; margin-top: 12px; }
+.notice code { font-size: 12px; background: var(--surface); padding: 1px 5px; border-radius: 5px; }
+
+/* ---------- tables ---------- */
+.table-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.table-tools input { width: 260px; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 8px 8px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; position: sticky; top: 0; background: var(--surface); }
+th[data-k] { cursor: pointer; user-select: none; }
+th.sorted { color: var(--brand); }
+th.txt, td.txt { text-align: left; }
+td.name { font-weight: 600; }
+/* pills + name button: the button shrinks and ellipsizes, whatever the number of pills */
+.name-wrap { display: flex; align-items: center; max-width: 320px; }
+.name-wrap .pill { flex: none; }
+td.sub-txt { color: var(--muted); max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
+td.result { max-width: 190px; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+td.result b { color: var(--ink); }
+tbody tr:hover { background: var(--surface-2); }
+tfoot td { font-weight: 800; border-top: 2px solid var(--border); border-bottom: 0; }
+.pill { display: inline-grid; place-items: center; width: 18px; height: 18px; font-size: 10px; font-weight: 800; border-radius: 5px; color: #fff; vertical-align: 1px; margin-right: 4px; }
+.pill.google { background: var(--series2); } .pill.meta { background: var(--brand); }
+.table-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12px; color: var(--muted); }
+.link-btn { font: inherit; font-size: 13px; font-weight: 700; color: var(--brand); background: none; border: 0; cursor: pointer; padding: 6px 0; }
+.empty { padding: 28px; text-align: center; color: var(--muted); }
+.export-btns { display: flex; gap: 6px; }
+.tool-btn { font: inherit; font-size: 13px; font-weight: 700; color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 10px; min-height: 40px; padding: 0 12px; cursor: pointer; white-space: nowrap; }
+.tool-btn:hover:not(:disabled) { color: var(--brand); border-color: color-mix(in srgb, var(--brand) 40%, var(--border)); }
+.tool-btn:disabled { opacity: .5; cursor: default; }
+/* line name in the table opens the drill-down */
+.row-link { font: inherit; font-weight: 600; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left;
+  flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-link:hover { color: var(--brand); text-decoration: underline; }
+
+/* ---------- alerts ---------- */
+.alerts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.alert { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: var(--surface-2);
+  border: 1px solid var(--border); font-size: 13px; min-width: 0; }
+.alert-tag { flex: none; min-width: 112px; text-align: center; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 99px; }
+.alert.bad .alert-tag { color: var(--bad); background: color-mix(in srgb, var(--bad) 13%, transparent); }
+.alert.warn .alert-tag { color: var(--warn); background: color-mix(in srgb, var(--warn) 15%, transparent); }
+.alert.ok { color: var(--good); font-weight: 600; }
+.alert-body { min-width: 0; display: grid; gap: 3px; }
+.alert-body .name-wrap { max-width: 100%; }
+.alert-detail { color: var(--ink-2); line-height: 1.45; }
+
+/* ---------- drill-down dialog ---------- */
+.drill { width: min(1100px, calc(100vw - 32px)); max-width: calc(100vw - 32px); max-height: calc(100dvh - 32px); padding: 0;
+  color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); }
+.drill::backdrop { background: rgba(10, 14, 24, .5); }
+.drill-body { padding: 18px 20px 20px; }
+.drill-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.drill-head h2 { font-size: 19px; font-weight: 800; overflow-wrap: anywhere; }
+.drill-sub { margin-top: 4px; font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+#drill-kpis { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); } /* 7 tiles on one row at full width */
+#drill-chart .legend { margin-bottom: 8px; }
+
+.foot { margin-top: 20px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+@media (max-width: 1100px) { .kpis { grid-template-columns: repeat(2, 1fr); } .compare-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .page { padding-block-start: 20px; }
+  .date-row input { width: 100%; min-width: 0; }
+  .table-tools, .table-tools input { width: 100%; }
+  .export-btns .tool-btn { flex: 1; }
+  .alert { flex-direction: column; gap: 6px; }
+  .alert-tag { min-width: 0; }
+  .drill-body { padding: 14px 14px 16px; }
+  #drill-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  #drill-kpis .mini { padding: 8px 10px; }
+  #drill-kpis .val { font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #drill-kpis .delta { font-size: 11px; padding: 2px 6px; white-space: nowrap; }
+  .chart-box.tall { height: 260px; }
+}
+
+</style>
+  <div class="page">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">All The Day Group · AI Robot Chess &amp; All Day Bánh Mì</div>
+        <h1>Báo cáo quảng cáo</h1>
+        <p class="hero-sub" id="hero-sub"></p>
+        <p class="warn" id="stale-warn" hidden></p>
+        <p class="warn" id="coverage-warn" hidden></p>
+      </div>
+      <button class="theme-btn" id="theme-btn" type="button" aria-label="Đổi giao diện sáng/tối">◐</button>
+    </header>
+
+    <section class="filters" aria-label="Bộ lọc">
+      <label class="field grow">
+        <span>Page</span>
+        <select id="page-select" aria-label="Chọn page"></select>
+      </label>
+      <div class="field">
+        <span>Nền tảng</span>
+        <div class="seg" id="platform-seg" role="group" aria-label="Nền tảng">
+          <button type="button" data-p="all">Tất cả</button>
+          <button type="button" data-p="google">Google Ads</button>
+          <button type="button" data-p="meta">Meta Ads</button>
+        </div>
+      </div>
+      <label class="field grow">
+        <span>Tài khoản</span>
+        <select id="account-select" aria-label="Chọn tài khoản"></select>
+      </label>
+      <div class="field">
+        <span>Khoảng thời gian</span>
+        <div class="date-row">
+          <input type="date" id="date-from" aria-label="Từ ngày">
+          <span class="muted">→</span>
+          <input type="date" id="date-to" aria-label="Đến ngày">
+        </div>
+      </div>
+      <div class="field">
+        <span>Chọn nhanh</span>
+        <div class="seg" id="preset-seg" role="group" aria-label="Chọn nhanh khoảng thời gian">
+          <button type="button" data-preset="7">7 ngày</button>
+          <button type="button" data-preset="30">30 ngày</button>
+          <button type="button" data-preset="month">Tháng này</button>
+          <button type="button" data-preset="prev-month">Tháng trước</button>
+          <button type="button" data-preset="all">Toàn bộ</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="kpis" id="kpis" aria-label="Chỉ số tổng"></section>
+
+    <section class="card" id="alerts-card">
+      <div class="card-head"><h2>Cảnh báo<span id="alerts-count"></span></h2><span class="muted small" id="alerts-note"></span></div>
+      <ul class="alerts" id="alerts"></ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Chi phí &amp; chuyển đổi theo <span id="trend-unit">ngày</span></h2>
+        <div class="legend" id="trend-legend"></div>
+      </div>
+      <div class="chart-box tall"><canvas id="c-trend" role="img" aria-label="Biểu đồ chi phí và chuyển đổi theo thời gian"></canvas></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Google Ads vs Meta Ads</h2><span class="muted small" id="compare-note"></span></div>
+      <div id="compare"></div>
+    </section>
+
+    <section class="card" id="gmaps-card" hidden>
+      <div class="card-head">
+        <h2>Google Ads · Hành động trên Google Maps</h2>
+        <span class="muted small">Chuyển đổi Google = chỉ đường + gọi điện + nhấp vào website</span>
+      </div>
+      <div class="minis" id="gmaps-kpis"></div>
+      <div class="legend" id="gmaps-legend"></div>
+      <div class="chart-box"><canvas id="c-gmaps" role="img" aria-label="Biểu đồ hành động Google Maps theo thời gian"></canvas></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Chi tiết</h2>
+        <div class="table-tools">
+          <div class="seg" id="group-seg" role="group" aria-label="Nhóm theo">
+            <button type="button" data-g="campaign">Campaign</button>
+            <button type="button" data-g="page">Page</button>
+            <button type="button" data-g="account">Tài khoản</button>
+          </div>
+          <input type="search" id="table-search" placeholder="Tìm campaign / page / tài khoản…" aria-label="Tìm kiếm">
+          <div class="export-btns" role="group" aria-label="Tải bảng về máy">
+            <button type="button" class="tool-btn" id="export-xlsx" title="File Excel (.xlsx): mọi dòng theo bộ lọc, tìm kiếm và sắp xếp hiện tại">⬇ Excel</button>
+            <button type="button" class="tool-btn" id="export-csv" title="CSV UTF-8 (dấu phẩy, số thập phân dấu chấm) cho Google Sheets / công cụ khác">⬇ CSV</button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap" id="table-wrap"></div>
+      <div class="table-foot" id="table-foot"></div>
+    </section>
+
+    <footer class="foot" id="foot"></footer>
+  </div>
+
+  <dialog class="drill" id="drill" aria-labelledby="drill-title">
+    <div class="drill-body">
+      <div class="drill-head">
+        <div>
+          <h2 id="drill-title"></h2>
+          <p class="drill-sub" id="drill-sub"></p>
+        </div>
+        <button class="icon-btn" id="drill-close" type="button" aria-label="Đóng">✕</button>
+      </div>
+      <div class="minis" id="drill-kpis"></div>
+      <div id="drill-chart">
+        <div class="legend" id="drill-legend"></div>
+        <div class="chart-box tall"><canvas id="c-drill" role="img" aria-label="Biểu đồ chi phí và kết quả theo thời gian của dòng đang xem"></canvas></div>
+      </div>
+    </div>
+  </dialog>
+  <script>
+const PAYLOAD = {"generated_at":"2026-11-01T07:00","meta_pulled_at":"2026-11-01T07:00:14","coverage":{"meta":[["2026-07-31","2026-10-31"]],"google":[["2026-07-31","2026-10-31"]]},"accounts":[{"p":"meta","name":"All Day Group","cur":"VND","nv":false},{"p":"google","name":"All The Day Group","cur":"VND","nv":true,"u":"2026-10-31"}],"campaigns":[{"a":0,"n":"CHESS - Mùa hè - Message","rl":"Tin nhắn","pg":"AI Robot Chess"},{"a":0,"n":"BM | Mùa hè | Meessage","rl":"Tin nhắn","pg":"All Day Bánh Mì"},{"a":1,"n":"ATB - HA - Bread","rl":"Chỉ đường · gọi · website","pg":"All Day Bánh Mì"},{"a":1,"n":"PMax | All Day Banh Mi | Hoi An - Store Visit","rl":"Chỉ đường · gọi · website","pg":"All Day Bánh Mì"}],"rows":[[0,"2026-07-31",105075.0,2831,151,8.0,0.0,8.0],[1,"2026-07-31",55747.0,697,44,0.0,0.0,0.0],[0,"2026-08-01",84054.0,3133,138,8.0,0.0,8.0],[1,"2026-08-01",10570.0,295,20,0.0,0.0,0.0],[0,"2026-08-02",122310.0,4442,205,11.0,0.0,11.0],[1,"2026-08-02",62051.0,1211,56,3.0,0.0,3.0],[0,"2026-08-03",106126.0,3840,166,5.0,0.0,5.0],[1,"2026-08-03",28636.0,688,41,2.0,0.0,2.0],[0,"2026-08-04",78607.0,2791,97,5.0,0.0,5.0],[0,"2026-08-05",62824.0,2333,76,5.0,0.0,5.0],[0,"2026-08-06",60662.0,2173,60,4.0,0.0,4.0],[0,"2026-08-07",62595.0,1756,68,6.0,0.0,6.0],[0,"2026-08-08",62458.0,1660,63,10.0,0.0,10.0],[0,"2026-08-09",76066.0,2596,87,6.0,0.0,6.0],[0,"2026-08-10",71602.0,3034,108,3.0,0.0,3.0],[0,"2026-08-11",83839.0,4093,103,7.0,0.0,7.0],[0,"2026-08-12",72048.0,4002,107,5.0,0.0,5.0],[0,"2026-08-13",63151.0,2756,100,6.0,0.0,6.0],[0,"2026-08-14",60559.0,2497,69,2.0,0.0,2.0],[0,"2026-08-15",62717.0,2699,98,3.0,0.0,3.0],[0,"2026-08-16",76036.0,3787,111,7.0,0.0,7.0],[0,"2026-08-17",60341.0,2441,132,6.0,0.0,6.0],[0,"2026-08-18",77732.0,3062,132,2.0,0.0,2.0],[0,"2026-08-19",85009.0,3290,168,3.0,0.0,3.0],[0,"2026-08-20",61567.0,2087,90,2.0,0.0,2.0],[0,"2026-08-21",69832.0,2506,101,1.0,0.0,1.0],[0,"2026-08-22",59457.0,2123,93,2.0,0.0,2.0],[0,"2026-08-23",76756.0,3115,88,5.0,0.0,5.0],[0,"2026-08-24",83503.0,3570,120,7.0,0.0,7.0],[0,"2026-08-25",77155.0,3743,84,1.0,0.0,1.0],[0,"2026-08-26",60573.0,3115,91,7.0,0.0,7.0],[0,"2026-08-27",57585.0,2687,61,2.0,0.0,2.0],[0,"2026-08-28",66314.0,3025,81,6.0,0.0,6.0],[0,"2026-08-29",68114.0,2688,81,7.0,0.0,7.0],[0,"2026-08-30",87955.0,3991,141,7.0,0.0,7.0],[0,"2026-08-31",74926.0,3681,120,6.0,0.0,6.0],[0,"2026-09-01",84475.0,3892,144,3.0,0.0,3.0],[0,"2026-09-02",65029.0,3122,113,2.0,0.0,2.0],[0,"2026-09-03",55018.0,2633,59,0.0,0.0,0.0],[0,"2026-09-04",56802.0,3132,82,3.0,0.0,3.0],[0,"2026-09-05",65764.0,3391,52,1.0,0.0,1.0],[0,"2026-09-06",63466.0,2954,122,3.0,0.0,3.0],[1,"2026-09-06",21797.0,430,54,2.0,0.0,2.0],[0,"2026-09-07",83177.0,3284,130,3.0,0.0,3.0],[1,"2026-09-07",28875.0,427,26,0.0,0.0,0.0],[0,"2026-09-08",57755.0,1926,70,2.0,0.0,2.0],[1,"2026-09-08",43665.0,708,74,2.0,0.0,2.0],[0,"2026-09-09",62163.0,2193,80,6.0,0.0,6.0],[1,"2026-09-09",52652.0,861,103,1.0,0.0,1.0],[0,"2026-09-10",60057.0,1982,53,1.0,0.0,1.0],[1,"2026-09-10",66448.0,1356,152,3.0,0.0,3.0],[0,"2026-09-11",77954.0,2767,101,2.0,0.0,2.0],[1,"2026-09-11",56340.0,1142,127,3.0,0.0,3.0],[0,"2026-09-12",85391.0,3264,130,8.0,0.0,8.0],[1,"2026-09-12",58849.0,992,80,1.0,0.0,1.0],[0,"2026-09-13",74286.0,3180,82,5.0,0.0,5.0],[1,"2026-09-13",54324.0,766,67,1.0,0.0,1.0],[0,"2026-09-14",64592.0,2784,72,5.0,0.0,5.0],[1,"2026-09-14",54831.0,654,53,2.0,0.0,2.0],[0,"2026-09-15",62296.0,2142,46,2.0,0.0,2.0],[1,"2026-09-15",47614.0,389,35,4.0,0.0,4.0],[0,"2026-09-16",91600.0,4063,118,8.0,0.0,8.0],[1,"2026-09-16",59898.0,990,58,1.0,0.0,1.0],[0,"2026-09-17",64587.0,3329,75,3.0,0.0,3.0],[1,"2026-09-17",46226.0,1014,48,3.0,0.0,3.0],[0,"2026-09-18",65373.0,2704,76,5.0,0.0,5.0],[1,"2026-09-18",45974.0,982,66,0.0,0.0,0.0],[0,"2026-09-19",67260.0,2732,65,2.0,0.0,2.0],[1,"2026-09-19",38468.0,610,34,1.0,0.0,1.0],[0,"2026-09-20",73030.0,2723,62,5.0,0.0,5.0],[1,"2026-09-20",44835.0,919,41,2.0,0.0,2.0],[0,"2026-09-21",64055.0,2555,53,1.0,0.0,1.0],[1,"2026-09-21",60050.0,769,36,0.0,0.0,0.0],[0,"2026-09-22",81849.0,2944,46,1.0,0.0,1.0],[1,"2026-09-22",57076.0,759,34,1.0,0.0,1.0],[0,"2026-09-23",59503.0,2042,33,0.0,0.0,0.0],[1,"2026-09-23",40020.0,828,63,1.0,0.0,1.0],[0,"2026-09-24",62590.0,2199,50,0.0,0.0,0.0],[1,"2026-09-24",47716.0,733,43,0.0,0.0,0.0],[0,"2026-09-25",63515.0,2612,49,3.0,0.0,3.0],[1,"2026-09-25",49659.0,823,37,1.0,0.0,1.0],[0,"2026-09-26",85419.0,3534,96,6.0,0.0,6.0],[1,"2026-09-26",44259.0,644,45,2.0,0.0,2.0],[0,"2026-09-27",64524.0,2553,81,5.0,0.0,5.0],[1,"2026-09-27",53873.0,1259,64,2.0,0.0,2.0],[0,"2026-09-28",88862.0,3786,89,2.0,0.0,2.0],[1,"2026-09-28",62334.0,1417,151,3.0,0.0,3.0],[0,"2026-09-29",77223.0,2949,74,5.0,0.0,5.0],[1,"2026-09-29",60787.0,3126,100,0.0,0.0,0.0],[2,"2026-09-29",0.0,1,0,0,0,0],[3,"2026-09-29",101783.0,212,14,9.0,0,9.0],[0,"2026-09-30",67607.0,2688,81,6.0,0.0,6.0],[1,"2026-09-30",25274.0,425,51,0.0,0.0,0.0],[2,"2026-09-30",0.0,1,0,0,0,0],[3,"2026-09-30",52077.9,2994,59,19.0,0,19.0],[0,"2026-10-01",67556.0,3028,74,4.0,0.0,4.0],[1,"2026-10-01",53451.0,1223,98,1.0,0.0,1.0],[2,"2026-10-01",0.0,1,0,0,0,0],[3,"2026-10-01",101875.47,4380,83,24.0,0,24.0],[0,"2026-10-02",58818.0,3384,70,1.0,0.0,1.0],[1,"2026-10-02",49048.0,1775,116,1.0,0.0,1.0],[2,"2026-10-02",0.0,3,0,0,0,0],[3,"2026-10-02",94210.49,3764,120,33.0,0,33.0],[0,"2026-10-03",64204.0,2348,66,1.0,0.0,1.0],[1,"2026-10-03",43880.0,1663,82,0.0,0.0,0.0],[3,"2026-10-03",109881.19,3203,116,71.0,0,71.0],[0,"2026-10-04",52678.0,1900,58,2.0,0.0,2.0],[1,"2026-10-04",65709.0,3686,61,6.0,0.0,6.0],[3,"2026-10-04",3181.81,87,8,0,0,0],[0,"2026-10-05",23415.0,894,22,3.0,0.0,3.0],[1,"2026-10-05",73621.0,6547,68,1.0,0.0,1.0],[3,"2026-10-05",14.18,4,1,0,0,0],[0,"2026-10-06",23199.0,718,20,1.0,0.0,1.0],[1,"2026-10-06",23857.0,1562,17,1.0,0.0,1.0],[3,"2026-10-06",4.82,3,0,0,0,0],[0,"2026-10-07",25861.0,703,25,1.0,0.0,1.0],[1,"2026-10-07",64949.0,5258,52,0.0,0.0,0.0],[0,"2026-10-08",27628.0,740,25,1.0,0.0,1.0],[1,"2026-10-08",34285.0,2750,30,0.0,0.0,0.0],[0,"2026-10-09",40594.0,1208,23,1.0,0.0,1.0],[1,"2026-10-09",35649.0,574,24,1.0,0.0,1.0],[3,"2026-10-09",1.0,1,0,0,0,0],[0,"2026-10-10",42766.0,1339,41,1.0,0.0,1.0],[1,"2026-10-10",48806.0,978,49,2.0,0.0,2.0],[0,"2026-10-11",32102.0,969,16,1.0,0.0,1.0],[1,"2026-10-11",65581.0,2185,82,2.0,0.0,2.0],[0,"2026-10-12",24421.0,611,20,0.0,0.0,0.0],[1,"2026-10-12",65498.0,2802,50,0.0,0.0,0.0],[0,"2026-10-13",32173.0,914,23,0.0,0.0,0.0],[1,"2026-10-13",22029.0,518,33,0.0,0.0,0.0],[0,"2026-10-14",27890.0,843,28,0.0,0.0,0.0],[1,"2026-10-14",48177.0,1854,122,0.0,0.0,0.0],[0,"2026-10-15",29023.0,896,20,1.0,0.0,1.0],[1,"2026-10-15",54437.0,2369,212,1.0,0.0,1.0],[0,"2026-10-16",29718.0,925,37,2.0,0.0,2.0],[1,"2026-10-16",49004.0,2874,232,1.0,0.0,1.0],[0,"2026-10-17",34098.0,1263,20,1.0,0.0,1.0],[1,"2026-10-17",41927.0,2030,113,2.0,0.0,2.0],[3,"2026-10-17",200738.38,2133,3,1.0,0,1.0],[0,"2026-10-18",36188.0,1300,50,0.0,0.0,0.0],[1,"2026-10-18",64202.0,3461,168,5.0,0.0,5.0],[3,"2026-10-18",204751.81,8987,179,12.0,0,12.0],[0,"2026-10-19",27562.0,1122,22,0.0,0.0,0.0],[1,"2026-10-19",50466.0,2053,112,4.0,0.0,4.0],[3,"2026-10-19",70213.46,1502,37,9.0,0,9.0],[0,"2026-10-20",27904.0,1040,21,0.0,0.0,0.0],[1,"2026-10-20",39596.0,1792,97,2.0,0.0,2.0],[3,"2026-10-20",9.0,1,0,0,0,0],[0,"2026-10-21",37027.0,1353,48,3.0,0.0,3.0],[1,"2026-10-21",64557.0,3924,156,5.0,0.0,5.0],[0,"2026-10-22",27978.0,1060,41,1.0,0.0,1.0],[1,"2026-10-22",39912.0,1955,106,0.0,0.0,0.0],[0,"2026-10-23",29294.0,1059,40,1.0,0.0,1.0],[1,"2026-10-23",55950.0,2814,146,3.0,0.0,3.0],[0,"2026-10-24",23812.0,1061,47,5.0,0.0,5.0],[1,"2026-10-24",34848.0,1865,88,3.0,0.0,3.0],[0,"2026-10-25",28059.0,934,28,1.0,0.0,1.0],[1,"2026-10-25",63624.0,3581,206,3.0,0.0,3.0],[0,"2026-10-26",26223.0,1241,47,0.0,0.0,0.0],[1,"2026-10-26",58205.0,2896,161,3.0,0.0,3.0],[0,"2026-10-27",31112.0,1423,75,1.0,0.0,1.0],[1,"2026-10-27",52314.0,2437,151,1.0,0.0,1.0],[0,"2026-10-28",31014.0,1185,52,2.0,0.0,2.0],[1,"2026-10-28",59897.0,2303,274,0.0,0.0,0.0],[0,"2026-10-29",34727.0,1367,28,2.0,0.0,2.0],[1,"2026-10-29",37708.0,1435,194,1.0,0.0,1.0],[0,"2026-10-30",9048.0,366,5,0.0,0.0,0.0],[1,"2026-10-30",34291.0,1102,104,0.0,0.0,0.0],[3,"2026-10-30",190262.21,7032,115,14.0,0,14.0],[1,"2026-10-31",42504.0,1167,95,0.0,0.0,0.0],[3,"2026-10-31",199991.91,6847,169,19.0,0,19.0]],"action_types":[{"k":"directions","lbl":"Chỉ đường","conv":true},{"k":"calls","lbl":"Gọi điện","conv":true},{"k":"website","lbl":"Nhấp vào website","conv":true},{"k":"menu","lbl":"Xem menu","conv":false},{"k":"other","lbl":"Tương tác khác","conv":false}],"action_rows":[[3,"2026-09-29",0,8.0],[3,"2026-09-29",1,1.0],[3,"2026-09-29",4,14.0],[3,"2026-09-30",3,15.0],[3,"2026-09-30",0,18.0],[3,"2026-09-30",1,1.0],[3,"2026-09-30",4,113.0],[3,"2026-10-01",3,8.0],[3,"2026-10-01",2,2.0],[3,"2026-10-01",0,22.0],[3,"2026-10-01",4,112.0],[3,"2026-10-02",3,5.0],[3,"2026-10-02",2,1.0],[3,"2026-10-02",0,32.0],[3,"2026-10-02",4,120.0],[3,"2026-10-03",3,6.0],[3,"2026-10-03",2,5.0],[3,"2026-10-03",0,64.0],[3,"2026-10-03",1,2.0],[3,"2026-10-03",4,134.0],[3,"2026-10-04",4,17.0],[3,"2026-10-05",3,2.0],[3,"2026-10-05",4,5.0],[3,"2026-10-17",0,1.0],[3,"2026-10-17",4,1.0],[3,"2026-10-18",3,17.0],[3,"2026-10-18",2,2.0],[3,"2026-10-18",0,10.0],[3,"2026-10-18",4,88.0],[3,"2026-10-19",3,9.0],[3,"2026-10-19",2,3.0],[3,"2026-10-19",0,6.0],[3,"2026-10-19",4,133.0],[3,"2026-10-30",0,14.0],[3,"2026-10-30",4,16.0],[3,"2026-10-31",0,19.0]]};
+// ---------- Data helpers: payload decoding, VND/number formatting, filtering and aggregation ----------
+// PAYLOAD comes from build-dashboard.py:
+//   accounts:  [{p: 'meta'|'google', name, cur, nv: conversion value is a count (no ROAS)}]
+//   campaigns: [{a: account index, n: name, rl: result label ('Tin nhắn', 'ThruPlay', 'Conversion'...),
+//                pg: promoted Page ('AI Robot Chess', 'All Day Bánh Mì', 'Chưa gắn page')}]
+//   rows:      [[campaign index, 'YYYY-MM-DD', spend, impressions, clicks, conversions, conv value, results]]
+//              sorted by date; results = count in the campaign's result type, conversions = results only when
+//              that type is a conversion (Meta: messages, leads, purchases, pixel events;
+//              Google: Maps directions + calls + website clicks)
+//   action_types: [{k, lbl, conv}]  Google conversion-action types (conv = counted as a conversion)
+//   action_rows:  [[campaign index, 'YYYY-MM-DD', action type index, count]]
+
+const ACCOUNTS = PAYLOAD.accounts;
+const CAMPAIGNS = PAYLOAD.campaigns;
+const ROWS = PAYLOAD.rows;
+const COVERAGE = PAYLOAD.coverage || {}; // {platform: [[from, to], ...]} merged ranges that were pulled
+const DATES = [...new Set(ROWS.map(r => r[1]))].sort();
+// presets anchor on the end of the pulled data, not on the last day with delivery (a paused campaign has no rows)
+const BOUNDS = [...DATES.slice(0, 1), ...DATES.slice(-1), ...Object.values(COVERAGE).flat().flat()].sort();
+const MIN_DATE = BOUNDS[0] || null;
+const MAX_DATE = BOUNDS[BOUNDS.length - 1] || null;
+const PAGES = [...new Set(CAMPAIGNS.map(c => c.pg))].sort((a, b) => a.localeCompare(b, 'vi'));
+const HAS_GOOGLE = ACCOUNTS.some(a => a.p === 'google');
+const HAS_META = ACCOUNTS.some(a => a.p === 'meta');
+const PLATFORM_LABEL = { google: 'Google Ads', meta: 'Meta Ads' };
+
+const div = (a, b) => (b ? a / b : null);
+const nf0 = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 });
+const nf2 = new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/** Full VND: 36.942.522 ₫ */
+const fmtVnd = v => (v == null || isNaN(v) ? '–' : nf0.format(Math.round(v)) + ' ₫');
+/** Compact VND for tiles/axes: 1,23 tỷ ₫ · 36,9 tr ₫ · 512 N ₫ */
+function fmtVndShort(v) {
+  if (v == null || isNaN(v)) return '–';
+  const a = Math.abs(v);
+  if (a >= 1e9) return nf2.format(v / 1e9) + ' tỷ ₫';
+  if (a >= 1e6) return nf1.format(v / 1e6) + ' tr ₫';
+  if (a >= 1e3) return nf0.format(v / 1e3) + ' N ₫';
+  return nf0.format(v) + ' ₫';
+}
+const fmtInt = v => (v == null || isNaN(v) ? '–' : nf0.format(Math.round(v)));
+const fmtNum = v => (v == null || isNaN(v) ? '–' : nf1.format(v));
+const fmtPct = (v, d = 2) => (v == null || isNaN(v) ? '–' : (v * 100).toLocaleString('vi-VN', { minimumFractionDigits: d, maximumFractionDigits: d }) + '%');
+const fmtRoas = v => (v == null || isNaN(v) ? '–' : nf2.format(v) + 'x');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// ---- dates (ISO strings, UTC arithmetic so DST/timezone never shifts a day) ----
+const toDate = s => new Date(s + 'T00:00:00Z');
+const isoOf = d => d.toISOString().slice(0, 10);
+const addDays = (s, n) => { const d = toDate(s); d.setUTCDate(d.getUTCDate() + n); return isoOf(d); };
+const daysBetween = (a, b) => Math.round((toDate(b) - toDate(a)) / 864e5) + 1;
+const fmtDate = s => (s ? `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(0, 4)}` : '–');
+const fmtDay = s => `${s.slice(8, 10)}/${s.slice(5, 7)}`;
+
+/** Rows (any array whose rows start with [campaign index, date]) matching page/platform/account and [from, to]. */
+function filterRows(f, from, to, rows = ROWS) {
+  return rows.filter(r => {
+    if (r[1] < from || r[1] > to) return false;
+    if (f.page !== 'all' && CAMPAIGNS[r[0]].pg !== f.page) return false;
+    const a = CAMPAIGNS[r[0]].a;
+    if (f.account !== 'all') return a === +f.account;
+    return f.platform === 'all' || ACCOUNTS[a].p === f.platform;
+  });
+}
+
+/** Sum rows and derive ratios on sums (never averages of ratios). */
+function aggregate(rows) {
+  const t = { spend: 0, impr: 0, clicks: 0, conv: 0, value: 0, res: 0, rows: rows.length };
+  for (const r of rows) { t.spend += r[2]; t.impr += r[3]; t.clicks += r[4]; t.conv += r[5]; t.value += r[6]; t.res += r[7]; }
+  t.ctr = div(t.clicks, t.impr);
+  t.cpc = div(t.spend, t.clicks);
+  t.cpa = div(t.spend, t.conv);
+  t.roas = t.value > 0 ? div(t.value, t.spend) : null;
+  return t;
+}
+
+/** Group rows by key(row) -> Map(key -> aggregate). */
+function groupBy(rows, keyFn) {
+  const buckets = new Map();
+  for (const r of rows) {
+    const k = keyFn(r);
+    if (!buckets.has(k)) buckets.set(k, []);
+    buckets.get(k).push(r);
+  }
+  return new Map([...buckets].map(([k, rs]) => [k, aggregate(rs)]));
+}
+
+const platformOfRow = r => ACCOUNTS[CAMPAIGNS[r[0]].a].p;
+
+/** Read a CSS custom property so charts follow the active theme. */
+const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+// ---------- Filter state + controls: platform, account, date range, quick presets ----------
+
+const state = {
+  page: 'all', platform: 'all', account: 'all', from: null, to: null, preset: '30',
+  group: 'campaign', search: '', showAll: false, sort: { k: 'spend', dir: -1 },
+};
+
+/** Date range for a quick preset, anchored on the latest day that has data (not today). */
+function presetRange(p) {
+  if (!MAX_DATE) return [null, null];
+  if (p === 'all') return [MIN_DATE, MAX_DATE];
+  if (p === 'month') return [MAX_DATE.slice(0, 8) + '01', MAX_DATE];
+  if (p === 'prev-month') {
+    const end = addDays(MAX_DATE.slice(0, 8) + '01', -1);
+    return [end.slice(0, 8) + '01', end];
+  }
+  return [addDays(MAX_DATE, -(+p - 1)), MAX_DATE];
+}
+
+/** Same-length window right before the selected range (for KPI deltas). */
+function previousRange(from, to) {
+  const len = daysBetween(from, to);
+  return [addDays(from, -len), addDays(from, -1)];
+}
+
+function fillAccountSelect() {
+  const sel = document.getElementById('account-select');
+  const spendByAccount = new Map();
+  for (const r of ROWS) { const a = CAMPAIGNS[r[0]].a; spendByAccount.set(a, (spendByAccount.get(a) || 0) + r[2]); }
+  const groups = ['google', 'meta'].filter(p => state.platform === 'all' || state.platform === p).map(p => {
+    const opts = ACCOUNTS.map((a, i) => ({ a, i })).filter(x => x.a.p === p)
+      .sort((x, y) => x.a.name.localeCompare(y.a.name, 'vi'))
+      .map(({ a, i }) => `<option value="${i}">${esc(a.name)} · ${fmtVndShort(spendByAccount.get(i) || 0)}</option>`);
+    return opts.length ? `<optgroup label="${PLATFORM_LABEL[p]}">${opts.join('')}</optgroup>` : '';
+  });
+  const n = ACCOUNTS.filter(a => state.platform === 'all' || a.p === state.platform).length;
+  sel.innerHTML = `<option value="all">Tất cả tài khoản (${n})</option>` + groups.join('');
+  sel.value = state.account;
+  if (sel.value !== state.account) { state.account = 'all'; sel.value = 'all'; }
+}
+
+function syncSeg(id, attr, value) {
+  document.querySelectorAll(`#${id} button`).forEach(b => {
+    const on = b.dataset[attr] === value;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on);
+  });
+}
+
+function syncControls() {
+  syncSeg('platform-seg', 'p', state.platform);
+  syncSeg('preset-seg', 'preset', state.preset);
+  syncSeg('group-seg', 'g', state.group);
+  const f = document.getElementById('date-from'), t = document.getElementById('date-to');
+  f.value = state.from || ''; t.value = state.to || '';
+  f.min = t.min = MIN_DATE || ''; f.max = t.max = MAX_DATE || '';
+}
+
+function initFilters(onChange) {
+  [state.from, state.to] = presetRange(state.preset);
+  const pageSel = document.getElementById('page-select');
+  pageSel.innerHTML = `<option value="all">Tất cả page (${PAGES.length})</option>` +
+    PAGES.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
+  pageSel.addEventListener('change', () => { state.page = pageSel.value; onChange(); });
+  fillAccountSelect();
+  syncControls();
+
+  document.querySelectorAll('#platform-seg button').forEach(b => b.addEventListener('click', () => {
+    state.platform = b.dataset.p;
+    fillAccountSelect(); // drops an account that no longer matches the platform
+    syncControls(); onChange();
+  }));
+  document.getElementById('account-select').addEventListener('change', e => {
+    state.account = e.target.value;
+    if (state.account !== 'all') {
+      state.platform = ACCOUNTS[+state.account].p;
+      fillAccountSelect(); // list now matches the platform, so "Tất cả tài khoản" means that platform's accounts
+    }
+    syncControls(); onChange();
+  });
+  document.querySelectorAll('#preset-seg button').forEach(b => b.addEventListener('click', () => {
+    state.preset = b.dataset.preset;
+    [state.from, state.to] = presetRange(state.preset);
+    syncControls(); onChange();
+  }));
+  ['date-from', 'date-to'].forEach(id => document.getElementById(id).addEventListener('change', () => {
+    let from = document.getElementById('date-from').value || MIN_DATE;
+    let to = document.getElementById('date-to').value || MAX_DATE;
+    if (from > to) [from, to] = [to, from];
+    Object.assign(state, { from, to, preset: null });
+    syncControls(); onChange();
+  }));
+  document.querySelectorAll('#group-seg button').forEach(b => b.addEventListener('click', () => {
+    state.group = b.dataset.g; state.showAll = false;
+    syncControls(); onChange();
+  }));
+  document.getElementById('table-search').addEventListener('input', e => {
+    state.search = e.target.value.trim().toLowerCase(); state.showAll = false;
+    onChange({ tableOnly: true });
+  });
+}
+
+// ---------- KPI tiles: spend, impressions, clicks, CTR, CPC, conversions, CPA, ROAS (+ delta vs previous period) ----------
+
+// lowerIsBetter: a rise is shown red (cost metrics)
+const KPI_DEFS = [
+  { k: 'spend', lbl: 'Chi phí', fmt: fmtVndShort, full: fmtVnd, neutral: true },
+  { k: 'impr', lbl: 'Hiển thị', fmt: fmtInt },
+  { k: 'clicks', lbl: 'Lượt nhấp', fmt: fmtInt },
+  { k: 'ctr', lbl: 'CTR', fmt: fmtPct },
+  { k: 'cpc', lbl: 'CPC', fmt: fmtVnd, lowerIsBetter: true },
+  { k: 'conv', lbl: 'Chuyển đổi', fmt: fmtNum },
+  { k: 'cpa', lbl: 'CPA', fmt: fmtVnd, lowerIsBetter: true },
+  { k: 'roas', lbl: 'ROAS', fmt: fmtRoas },
+];
+
+function deltaBadge(def, cur, prev) {
+  if (prev == null || prev === 0) return '<span class="delta">kỳ trước: –</span>';
+  if (cur == null) return '<span class="delta">–</span>';
+  const ch = cur / prev - 1;
+  const arrow = ch > 0 ? '▲' : ch < 0 ? '▼' : '•';
+  const better = def.lowerIsBetter ? ch < 0 : ch > 0;
+  const cls = def.neutral || Math.abs(ch) < 0.005 ? '' : better ? 'good' : 'bad';
+  return `<span class="delta ${cls}" title="Kỳ trước: ${esc(def.fmt(prev))}">${arrow} ${fmtPct(Math.abs(ch), 1)}</span>`;
+}
+
+function kpiSub(def, t) {
+  if (def.k === 'spend') return fmtVnd(t.spend);
+  if (def.k === 'conv') return 'Meta: tin nhắn · Google: chỉ đường, gọi, web';
+  if (def.k === 'roas') return t.value > 0 ? 'Giá trị: ' + fmtVndShort(t.value) : 'chưa có giá trị chuyển đổi';
+  if (def.k === 'cpa') return 'Chi phí ÷ chuyển đổi';
+  if (def.k === 'ctr') return 'Nhấp ÷ hiển thị';
+  if (def.k === 'cpc') return 'Chi phí ÷ nhấp';
+  return '&nbsp;';
+}
+
+function renderKpis(t, prev) {
+  document.getElementById('kpis').innerHTML = KPI_DEFS.map(def => `
+    <div class="kpi">
+      <div class="lbl">${def.lbl}</div>
+      <div class="val" title="${esc((def.full || def.fmt)(t[def.k]))}">${def.fmt(t[def.k])}</div>
+      <div class="sub">${kpiSub(def, t)}</div>
+      ${deltaBadge(def, t[def.k], prev[def.k])}
+    </div>`).join('');
+}
+
+// ---------- Chart.js: theme defaults + spend (stacked by platform) & conversions trend ----------
+
+const CHARTS = {};
+
+function themeColors() {
+  return { meta: cssVar('--brand'), google: cssVar('--series2'), line: cssVar('--line'), ink: cssVar('--ink'),
+    muted: cssVar('--muted'), grid: cssVar('--grid'), surface: cssVar('--surface') };
+}
+
+function applyChartDefaults(C) {
+  Chart.defaults.font.family = '"Be Vietnam Pro", system-ui, sans-serif';
+  Chart.defaults.font.size = 11;
+  Chart.defaults.color = C.muted;
+  Chart.defaults.maintainAspectRatio = false;
+  Chart.defaults.animation.duration = 400;
+  Object.assign(Chart.defaults.plugins.tooltip, {
+    backgroundColor: C.ink, titleColor: C.surface, bodyColor: C.surface, padding: 10, cornerRadius: 10,
+    titleFont: { weight: '700' }, boxPadding: 4,
+  });
+  Chart.defaults.plugins.legend.display = false;
+}
+
+function makeChart(id, config) {
+  if (CHARTS[id]) CHARTS[id].destroy();
+  CHARTS[id] = new Chart(document.getElementById(id), config);
+}
+
+/** Monday of the ISO week for a YYYY-MM-DD string. */
+const weekStart = s => addDays(s, -((toDate(s).getUTCDay() + 6) % 7));
+
+/** Daily buckets up to ~3 months, weekly beyond that so bars stay readable. */
+function trendBuckets(from, to) {
+  const weekly = daysBetween(from, to) > 92;
+  const keys = [];
+  for (let d = weekly ? weekStart(from) : from; d <= to; d = addDays(d, weekly ? 7 : 1)) keys.push(d);
+  return { weekly, keys, keyOf: weekly ? weekStart : s => s };
+}
+
+function renderTrend(rows, from, to, platforms) {
+  const weekly = renderSpendTrend('c-trend', 'trend-legend', rows, from, to, platforms);
+  document.getElementById('trend-unit').textContent = weekly ? 'tuần' : 'ngày';
+}
+
+/**
+ * Spend bars stacked by platform + one count line (row column `line.col`, default conversions) per day, or per week
+ * beyond ~3 months, into canvas `canvasId` with its legend in `legendId`. Returns whether buckets are weeks.
+ */
+function renderSpendTrend(canvasId, legendId, rows, from, to, platforms, line = { col: 5, label: 'Chuyển đổi' }) {
+  const C = themeColors();
+  const { weekly, keys, keyOf } = trendBuckets(from, to);
+  const idx = new Map(keys.map((k, i) => [k, i]));
+  const spend = { google: keys.map(() => 0), meta: keys.map(() => 0) };
+  const conv = keys.map(() => 0);
+  for (const r of rows) {
+    const i = idx.get(keyOf(r[1]));
+    if (i == null) continue;
+    spend[platformOfRow(r)][i] += r[2];
+    conv[i] += r[line.col];
+  }
+  const bars = platforms.map(p => ({
+    type: 'bar', label: 'Chi phí ' + PLATFORM_LABEL[p], data: spend[p], backgroundColor: C[p],
+    borderRadius: 3, stack: 'spend', yAxisID: 'y', order: 2, maxBarThickness: 28,
+  }));
+  document.getElementById(legendId).innerHTML =
+    platforms.map(p => `<span><i style="background:${C[p]}"></i>Chi phí ${PLATFORM_LABEL[p]}</span>`).join('') +
+    `<span><i class="ln" style="background:${C.line}"></i>${esc(line.label)}</span>`;
+
+  makeChart(canvasId, {
+    data: {
+      labels: keys.map(k => (weekly ? 'Tuần ' : '') + fmtDay(k)),
+      datasets: [...bars, {
+        type: 'line', label: line.label, data: conv, borderColor: C.line, backgroundColor: C.line,
+        borderWidth: 2, pointRadius: keys.length > 45 ? 0 : 2.5, pointHoverRadius: 4, tension: .3, yAxisID: 'y1', order: 1,
+      }],
+    },
+    options: {
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 12 } },
+        y: { stacked: true, beginAtZero: true, grid: { color: C.grid }, border: { display: false },
+          ticks: { callback: v => fmtVndShort(v) } },
+        y1: { position: 'right', beginAtZero: true, grid: { display: false }, border: { display: false },
+          ticks: { callback: v => fmtInt(v) } },
+      },
+      plugins: {
+        tooltip: { callbacks: {
+          title: items => (weekly ? 'Tuần từ ' : '') + fmtDate(keys[items[0].dataIndex]),
+          label: c => ` ${c.dataset.label}: ${c.dataset.yAxisID === 'y' ? fmtVnd(c.raw) : fmtNum(c.raw)}`,
+        } },
+      },
+    },
+  });
+  return weekly;
+}
+
+// ---------- Google Ads vs Meta Ads: side-by-side metrics + share bars (ignores the platform filter) ----------
+
+const COMPARE_ROWS = [
+  ['Chi phí', t => fmtVnd(t.spend)], ['Hiển thị', t => fmtInt(t.impr)], ['Lượt nhấp', t => fmtInt(t.clicks)],
+  ['CTR', t => fmtPct(t.ctr)], ['CPC', t => fmtVnd(t.cpc)], ['Chuyển đổi', t => fmtNum(t.conv)],
+  ['CPA', t => fmtVnd(t.cpa)], ['Giá trị chuyển đổi', t => (t.value > 0 ? fmtVnd(t.value) : '–')], ['ROAS', t => fmtRoas(t.roas)],
+  ['Tài khoản có chi tiêu', t => fmtInt(t.accounts)], ['Campaign có chi tiêu', t => fmtInt(t.campaigns)],
+];
+
+function platformTotals(rows) {
+  const t = aggregate(rows);
+  const live = rows.filter(r => r[2] > 0);
+  t.accounts = new Set(live.map(r => CAMPAIGNS[r[0]].a)).size;
+  t.campaigns = new Set(live.map(r => r[0])).size;
+  return t;
+}
+
+function shareBar(label, g, m, fmt) {
+  const total = g + m;
+  if (!total) return '';
+  const gp = g / total, mp = m / total;
+  const seg = (cls, p, v, name) => (p > 0
+    ? `<span class="${cls}" style="width:${(p * 100).toFixed(2)}%" title="${name}: ${esc(fmt(v))} (${fmtPct(p, 1)})">${p >= .12 ? fmtPct(p, 0) : ''}</span>` : '');
+  return `<div class="share-row"><div class="lbl"><span>${label}</span><span>Google ${fmtPct(gp, 1)} · Meta ${fmtPct(mp, 1)}</span></div>
+    <div class="share-bar">${seg('g', gp, g, 'Google Ads')}${seg('m', mp, m, 'Meta Ads')}</div></div>`;
+}
+
+function renderPlatformCompare(from, to) {
+  const rows = filterRows({ page: state.page, platform: 'all', account: state.account }, from, to);
+  const g = platformTotals(rows.filter(r => platformOfRow(r) === 'google'));
+  const m = platformTotals(rows.filter(r => platformOfRow(r) === 'meta'));
+  const all = platformTotals(rows);
+  const note = document.getElementById('compare-note');
+  note.textContent = (state.page === 'all' ? 'Mọi page' : state.page) + ' · ' +
+    (state.account === 'all' ? 'mọi tài khoản' : 'chỉ tài khoản đang chọn') + ' · khoảng thời gian đang chọn';
+
+  const table = `<div class="table-wrap"><table>
+    <thead><tr><th class="txt">Chỉ số</th><th>Google Ads</th><th>Meta Ads</th><th>Tổng</th></tr></thead>
+    <tbody>${COMPARE_ROWS.map(([lbl, f]) => `<tr><td class="txt">${lbl}</td><td>${HAS_GOOGLE ? f(g) : '–'}</td><td>${f(m)}</td><td>${f(all)}</td></tr>`).join('')}</tbody>
+  </table></div>`;
+
+  const shares = [shareBar('Chi phí', g.spend, m.spend, fmtVnd), shareBar('Lượt nhấp', g.clicks, m.clicks, fmtInt),
+    shareBar('Chuyển đổi', g.conv, m.conv, fmtNum)].join('');
+  const googleNotice = HAS_GOOGLE ? '' : `<div class="notice"><b>Chưa có dữ liệu Google Ads.</b> Chạy
+    <code>python scripts/pull-google-ads.py</code> (cần <code>GADS_CUSTOMER_IDS</code> trong <code>secrets/.env</code> và file khóa service account),
+    rồi chạy lại <code>python scripts/build-dashboard.py</code>.</div>`;
+  const countValued = ACCOUNTS.filter(a => a.nv).map(a => esc(a.name));
+  const valueNotice = countValued.length ? `<div class="notice"><b>ROAS Google = N/A.</b> Giá trị chuyển đổi của ${countValued.join(', ')}
+    chỉ bằng số lượt chuyển đổi (mặc định 1 ₫/lượt, vd. lượt ghé cửa hàng) nên không phải doanh thu và không được tính vào ROAS.
+    Muốn có ROAS cần gán giá trị cho hành động chuyển đổi trong Google Ads.</div>` : '';
+  document.getElementById('compare').innerHTML = `<div class="compare-grid">${table}
+    <div class="share">${shares || '<div class="empty">Không có chi tiêu trong khoảng này.</div>'}${googleNotice}${valueNotice}</div></div>`;
+}
+
+// ---------- Google Ads · Google Maps actions: ad clicks, directions, calls, website clicks (+ menu, other) ----------
+
+const ACTION_TYPES = PAYLOAD.action_types || [];
+const ACTION_ROWS = PAYLOAD.action_rows || [];
+const ACTION_COLORS = { directions: '--series2', calls: '--line2', website: '--brand' };
+
+function renderGoogleActions(from, to) {
+  const card = document.getElementById('gmaps-card');
+  card.hidden = !ACTION_ROWS.length || !activePlatforms().includes('google');
+  if (card.hidden) return;
+  const f = { page: state.page, platform: 'google', account: state.account };
+  const [pf, pt] = previousRange(from, to);
+  const cur = aggregate(filterRows(f, from, to)), prev = aggregate(filterRows(f, pf, pt));
+  const acts = filterRows(f, from, to, ACTION_ROWS), prevActs = filterRows(f, pf, pt, ACTION_ROWS);
+  const count = (rows, i) => rows.reduce((s, r) => s + (r[2] === i ? r[3] : 0), 0);
+
+  const tile = (lbl, val, prevVal, sub, cls = '') => `<div class="mini ${cls}"><div class="lbl">${lbl}</div>
+    <div class="val">${fmtInt(val)}</div><div class="sub">${sub}</div>${deltaBadge({ fmt: fmtInt }, val, prevVal)}</div>`;
+  const perAction = n => (n ? 'Chi phí/lượt ' + fmtVnd(cur.spend / n) : 'Chi phí/lượt –');
+  const tiles = [tile('Lượt nhấp quảng cáo', cur.clicks, prev.clicks, 'CPC ' + fmtVnd(cur.cpc))];
+  ACTION_TYPES.forEach((t, i) => {
+    const n = count(acts, i);
+    tiles.push(tile(t.lbl, n, count(prevActs, i), t.conv ? perAction(n) : 'không tính là chuyển đổi', t.conv ? 'key' : 'dim'));
+  });
+  tiles.splice(1, 0, tile('Chuyển đổi Maps', cur.conv, prev.conv, 'CPA ' + fmtVnd(cur.cpa), 'key total'));
+  document.getElementById('gmaps-kpis').innerHTML = tiles.join('');
+  if (typeof Chart !== 'undefined') renderGoogleActionsChart(acts, filterRows(f, from, to), from, to);
+}
+
+/** Daily (weekly beyond ~3 months) stacked counted actions + ad clicks line. */
+function renderGoogleActionsChart(acts, rows, from, to) {
+  const C = themeColors();
+  const { weekly, keys, keyOf } = trendBuckets(from, to);
+  const idx = new Map(keys.map((k, i) => [k, i]));
+  const counted = ACTION_TYPES.map((t, i) => ({ ...t, i })).filter(t => t.conv);
+  const series = counted.map(() => keys.map(() => 0));
+  const clicks = keys.map(() => 0);
+  for (const r of acts) {
+    const j = counted.findIndex(t => t.i === r[2]), i = idx.get(keyOf(r[1]));
+    if (j >= 0 && i != null) series[j][i] += r[3];
+  }
+  for (const r of rows) { const i = idx.get(keyOf(r[1])); if (i != null) clicks[i] += r[4]; }
+  const color = t => cssVar(ACTION_COLORS[t.k] || '--muted');
+  document.getElementById('gmaps-legend').innerHTML =
+    counted.map(t => `<span><i style="background:${color(t)}"></i>${t.lbl}</span>`).join('') +
+    `<span><i class="ln" style="background:${C.line}"></i>Lượt nhấp quảng cáo</span>`;
+  makeChart('c-gmaps', {
+    data: {
+      labels: keys.map(k => (weekly ? 'Tuần ' : '') + fmtDay(k)),
+      datasets: [
+        ...counted.map((t, j) => ({ type: 'bar', label: t.lbl, data: series[j], backgroundColor: color(t), stack: 'a',
+          yAxisID: 'y', order: 2, borderRadius: 3, maxBarThickness: 28 })),
+        { type: 'line', label: 'Lượt nhấp quảng cáo', data: clicks, borderColor: C.line, backgroundColor: C.line, borderWidth: 2,
+          pointRadius: keys.length > 45 ? 0 : 2.5, tension: .3, yAxisID: 'y1', order: 1 },
+      ],
+    },
+    options: {
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 12 } },
+        y: { stacked: true, beginAtZero: true, grid: { color: C.grid }, border: { display: false }, ticks: { precision: 0 },
+          title: { display: true, text: 'Hành động' } },
+        y1: { position: 'right', beginAtZero: true, grid: { display: false }, border: { display: false }, ticks: { precision: 0 },
+          title: { display: true, text: 'Lượt nhấp' } },
+      },
+      plugins: { tooltip: { callbacks: {
+        title: items => (weekly ? 'Tuần từ ' : '') + fmtDate(keys[items[0].dataIndex]),
+        label: c => ` ${c.dataset.label}: ${fmtInt(c.raw)}`,
+      } } },
+    },
+  });
+}
+
+// ---------- Breakdown table by campaign, page or account: search, sortable columns, top-50 + "show all", totals row ----------
+
+const PAGE_SIZE = 50;
+const METRIC_COLS = [
+  { k: 'spend', lbl: 'Chi phí', fmt: fmtVnd }, { k: 'impr', lbl: 'Hiển thị', fmt: fmtInt },
+  { k: 'clicks', lbl: 'Nhấp', fmt: fmtInt }, { k: 'ctr', lbl: 'CTR', fmt: fmtPct }, { k: 'cpc', lbl: 'CPC', fmt: fmtVnd },
+  { k: 'conv', lbl: 'Chuyển đổi', fmt: fmtNum }, { k: 'cpa', lbl: 'CPA', fmt: fmtVnd }, { k: 'roas', lbl: 'ROAS', fmt: fmtRoas },
+];
+const TEXT_KEYS = ['name', 'page', 'result'];
+// group key per row + what one line is called in the footer
+const GROUPS = {
+  campaign: { key: r => r[0], unit: 'campaign' },
+  page: { key: r => CAMPAIGNS[r[0]].pg, unit: 'page' },
+  account: { key: r => CAMPAIGNS[r[0]].a, unit: 'tài khoản' },
+};
+
+const pills = platforms => ['google', 'meta'].filter(p => platforms.has(p))
+  .map(p => `<span class="pill ${p}" title="${PLATFORM_LABEL[p]}">${p === 'google' ? 'G' : 'M'}</span>`).join('');
+
+/** Text a row is searched by: campaign, page and account names. */
+const rowText = r => { const c = CAMPAIGNS[r[0]]; return (c.n + ' ' + c.pg + ' ' + ACCOUNTS[c.a].name).toLowerCase(); };
+/** Rows matching the table's search box. */
+const searchRows = rows => (state.search ? rows.filter(r => rowText(r).includes(state.search)) : rows);
+
+// what the table shows right now (all lines, not only the first PAGE_SIZE): read by the export and the drill-down
+let TABLE = { lines: [], total: aggregate([]) };
+
+/** One line per group with display fields + aggregated metrics. */
+function breakdownLines(rows) {
+  const g = GROUPS[state.group];
+  const meta = new Map(); // group key -> {platforms, campaigns with spend}
+  for (const r of rows) {
+    const k = g.key(r);
+    if (!meta.has(k)) meta.set(k, { platforms: new Set(), camps: new Set() });
+    meta.get(k).platforms.add(platformOfRow(r));
+    if (r[2] > 0) meta.get(k).camps.add(r[0]);
+  }
+  const lines = [];
+  for (const [key, t] of groupBy(rows, g.key)) {
+    if (!t.spend && !t.impr) continue;
+    const c = state.group === 'campaign' ? CAMPAIGNS[key] : null;
+    const name = c ? c.n : state.group === 'page' ? key : ACCOUNTS[key].name;
+    lines.push(Object.assign(t, {
+      key, name, platforms: meta.get(key).platforms, nCamp: meta.get(key).camps.size,
+      page: c ? c.pg : null, account: c ? ACCOUNTS[c.a].name : null, result: c ? c.rl : null,
+    }));
+  }
+  return lines;
+}
+
+function sortLines(lines) {
+  const { k, dir } = state.sort;
+  return lines.sort((a, b) => {
+    const x = a[k], y = b[k];
+    if (TEXT_KEYS.includes(k)) return dir * String(x).localeCompare(String(y), 'vi');
+    if (x == null) return 1; // empty ratios always last
+    if (y == null) return -1;
+    return dir * (x - y);
+  });
+}
+
+function renderBreakdown(allRows) {
+  const byCampaign = state.group === 'campaign';
+  const rows = searchRows(allRows);
+  const lines = sortLines(breakdownLines(rows));
+  const total = aggregate(rows);
+  TABLE = { lines, total };
+  const shown = state.showAll ? lines : lines.slice(0, PAGE_SIZE);
+  const textCols = byCampaign
+    ? [{ k: 'name', lbl: 'Campaign' }, { k: 'page', lbl: 'Page' }, { k: 'result', lbl: 'Kết quả' }]
+    : [{ k: 'name', lbl: state.group === 'page' ? 'Page' : 'Tài khoản' }, { k: 'nCamp', lbl: 'Campaign', num: true }];
+  const th = col => {
+    const on = state.sort.k === col.k;
+    return `<th data-k="${col.k}" tabindex="0" class="${col.num ? '' : 'txt'}${on ? ' sorted' : ''}" aria-sort="${on ? (state.sort.dir > 0 ? 'ascending' : 'descending') : 'none'}">${col.lbl}${on ? (state.sort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`;
+  };
+  const head = textCols.map(th).join('') + METRIC_COLS.map(c => th({ ...c, num: true })).join('');
+  const body = shown.map((l, i) => { // shown is a prefix of lines, so i indexes TABLE.lines too
+    const name = `<td class="txt name"><span class="name-wrap">${pills(l.platforms)}<button type="button" class="row-link"
+      data-line="${i}" title="${esc(l.name)} · xem xu hướng">${esc(l.name)}</button></span></td>`;
+    const text = byCampaign
+      ? `${name}<td class="txt sub-txt" title="Tài khoản: ${esc(l.account)}">${esc(l.page)}</td>
+         <td class="txt result" title="${esc(l.result)}"><b>${fmtInt(l.res)}</b> ${esc(l.result)}</td>`
+      : `${name}<td>${fmtInt(l.nCamp)}</td>`;
+    return `<tr>${text}${METRIC_COLS.map(c => `<td>${c.fmt(l[c.k])}</td>`).join('')}</tr>`;
+  }).join('');
+  const foot = `<tr><td class="txt" colspan="${textCols.length}">Tổng (${fmtInt(lines.length)} dòng)</td>${METRIC_COLS.map(c => `<td>${c.fmt(total[c.k])}</td>`).join('')}</tr>`;
+
+  document.querySelectorAll('#export-csv, #export-xlsx').forEach(b => { b.disabled = !lines.length; });
+  const wrap = document.getElementById('table-wrap');
+  wrap.innerHTML = lines.length
+    ? `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody><tfoot>${foot}</tfoot></table>`
+    : '<div class="empty">Không có dữ liệu phù hợp.</div>';
+  wrap.querySelectorAll('th[data-k]').forEach(h => {
+    const sortBy = () => {
+      const k = h.dataset.k;
+      state.sort = { k, dir: state.sort.k === k ? -state.sort.dir : (TEXT_KEYS.includes(k) ? 1 : -1) };
+      renderBreakdown(allRows);
+    };
+    h.addEventListener('click', sortBy);
+    h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sortBy(); } });
+  });
+  const more = lines.length > PAGE_SIZE;
+  document.getElementById('table-foot').innerHTML =
+    `<span>Hiển thị ${fmtInt(shown.length)} / ${fmtInt(lines.length)} ${GROUPS[state.group].unit} · bấm tên để xem xu hướng</span>` +
+    (more ? `<button class="link-btn" id="toggle-all" type="button">${state.showAll ? 'Thu gọn' : 'Xem tất cả'}</button>` : '');
+  if (more) document.getElementById('toggle-all').addEventListener('click', () => { state.showAll = !state.showAll; renderBreakdown(allRows); });
+}
+
+// ---------- Minimal .xlsx writer (one sheet, inline strings, number formats, bold rows) in a stored zip: no library ----------
+// A real workbook instead of CSV because Excel opens a CSV with the PC's list/decimal separators: on a Vietnamese locale
+// "52077.9" or "0.0371" would be read wrong. Numbers stay numbers here and Excel shows them in the viewer's locale.
+
+// built-in numFmtId (num = General: counts that can be fractional, like Google all conversions); 164 = custom 0.00"x"
+const XLSX_FORMATS = { text: 0, num: 0, int: 3, pct: 10, roas: 164 };
+const XLSX_FORMAT_KEYS = Object.keys(XLSX_FORMATS);
+
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+
+function crc32(bytes) {
+  let c = 0xFFFFFFFF;
+  for (const b of bytes) c = CRC_TABLE[(c ^ b) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+/** Uncompressed ("stored") zip of {path: text}: all an .xlsx container needs. */
+function zipStored(files, type) {
+  const enc = new TextEncoder();
+  const parts = [], central = [];
+  let offset = 0;
+  for (const [path, text] of Object.entries(files)) {
+    const name = enc.encode(path), data = enc.encode(text), crc = crc32(data);
+    const head = (size, sig) => { const v = new DataView(new ArrayBuffer(size)); v.setUint32(0, sig, true); return v; };
+    const local = head(30, 0x04034b50); // version 2.0, no flags, method 0 (stored), DOS date 1980-01-01
+    local.setUint16(4, 20, true); local.setUint16(12, 0x21, true);
+    local.setUint32(14, crc, true); local.setUint32(18, data.length, true); local.setUint32(22, data.length, true);
+    local.setUint16(26, name.length, true);
+    const cen = head(46, 0x02014b50);
+    cen.setUint16(4, 20, true); cen.setUint16(6, 20, true); cen.setUint16(14, 0x21, true);
+    cen.setUint32(16, crc, true); cen.setUint32(20, data.length, true); cen.setUint32(24, data.length, true);
+    cen.setUint16(28, name.length, true); cen.setUint32(42, offset, true);
+    parts.push(local, name, data);
+    central.push(cen, name);
+    offset += 30 + name.length + data.length;
+  }
+  const end = new DataView(new ArrayBuffer(22));
+  const count = Object.keys(files).length;
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, count, true); end.setUint16(10, count, true);
+  end.setUint32(12, central.reduce((s, p) => s + p.byteLength, 0), true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, end], { type });
+}
+
+/** XML text: drop control characters XML 1.0 forbids (a pasted campaign name may carry one), escape markup. */
+const xmlText = s => String(s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, '')
+  .replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/** 0 -> A, 25 -> Z, 26 -> AA */
+const xlsxCol = i => (i >= 26 ? xlsxCol(Math.floor(i / 26) - 1) : '') + String.fromCharCode(65 + (i % 26));
+
+/**
+ * One-sheet workbook. rows: arrays of cells; a cell is null (empty), a string, or {v: number, f: 'num'|'int'|'pct'|'roas'}.
+ * opts: bold = Set of bold row indexes, freeze = rows kept on screen when scrolling, widths = column widths (characters).
+ * Strings are inline strings, so a name starting with "=" is text, never a formula.
+ */
+function xlsxBlob(sheetName, rows, { bold = new Set(), freeze = 0, widths = [] } = {}) {
+  const style = (f, b) => (b ? XLSX_FORMAT_KEYS.length : 0) + XLSX_FORMAT_KEYS.indexOf(f); // cellXfs index
+  const cell = (c, ref, b) => {
+    if (c == null || c === '') return '';
+    if (typeof c === 'string') return `<c r="${ref}" t="inlineStr"${b ? ` s="${style('text', true)}"` : ''}><is><t xml:space="preserve">${xmlText(c)}</t></is></c>`;
+    return Number.isFinite(c.v) ? `<c r="${ref}" s="${style(c.f, b)}"><v>${c.v}</v></c>` : '';
+  };
+  const sheetRows = rows.map((r, i) =>
+    `<row r="${i + 1}">${r.map((c, j) => cell(c, xlsxCol(j) + (i + 1), bold.has(i))).join('')}</row>`).join('');
+  const pane = freeze ? `<pane ySplit="${freeze}" topLeftCell="A${freeze + 1}" activePane="bottomLeft" state="frozen"/>` : '';
+  const cols = widths.length
+    ? `<cols>${widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : '';
+  const xfs = [0, 1].flatMap(b => XLSX_FORMAT_KEYS.map(f =>
+    `<xf numFmtId="${XLSX_FORMATS[f]}" fontId="${b}" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/>`));
+  const NS = 'http://schemas.openxmlformats.org';
+  const XML = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  const REL = `${NS}/officeDocument/2006/relationships`;
+  return zipStored({
+    '[Content_Types].xml': `${XML}<Types xmlns="${NS}/package/2006/content-types">` +
+      `<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>` +
+      `<Default Extension="xml" ContentType="application/xml"/>` +
+      `<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>` +
+      `<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>` +
+      `<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`,
+    '_rels/.rels': `${XML}<Relationships xmlns="${NS}/package/2006/relationships">` +
+      `<Relationship Id="rId1" Type="${REL}/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
+    'xl/workbook.xml': `${XML}<workbook xmlns="${NS}/spreadsheetml/2006/main" xmlns:r="${REL}">` +
+      `<sheets><sheet name="${xmlText(sheetName)}" sheetId="1" r:id="rId1"/></sheets></workbook>`,
+    'xl/_rels/workbook.xml.rels': `${XML}<Relationships xmlns="${NS}/package/2006/relationships">` +
+      `<Relationship Id="rId1" Type="${REL}/worksheet" Target="worksheets/sheet1.xml"/>` +
+      `<Relationship Id="rId2" Type="${REL}/styles" Target="styles.xml"/></Relationships>`,
+    'xl/styles.xml': `${XML}<styleSheet xmlns="${NS}/spreadsheetml/2006/main">` +
+      `<numFmts count="1"><numFmt numFmtId="164" formatCode="0.00&quot;x&quot;"/></numFmts>` +
+      `<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>` +
+      `<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>` +
+      `<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>` +
+      `<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>` +
+      `<cellXfs count="${xfs.length}">${xfs.join('')}</cellXfs>` +
+      `<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`,
+    'xl/worksheets/sheet1.xml': `${XML}<worksheet xmlns="${NS}/spreadsheetml/2006/main">` +
+      `<sheetViews><sheetView workbookViewId="0">${pane}</sheetView></sheetViews>${cols}` +
+      `<sheetData>${sheetRows}</sheetData></worksheet>`,
+  }, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+}
+
+// ---------- Export the detail table (current grouping, filters, search and sort; every line, not only the first 50) ----------
+// Excel: .xlsx with typed numbers + a title block. CSV: UTF-8 with BOM, comma separated, plain numbers (for Google Sheets
+// and tools; Excel on a Vietnamese locale may misread its decimals, hence the separate Excel button).
+
+// per metric: export header (with unit) + number format
+const EXPORT_METRICS = {
+  spend: ['Chi phí (₫)', 'int'], impr: ['Hiển thị', 'int'], clicks: ['Nhấp', 'int'], ctr: ['CTR (%)', 'pct'],
+  cpc: ['CPC (₫)', 'int'], conv: ['Chuyển đổi', 'num'], cpa: ['CPA (₫)', 'int'], roas: ['ROAS (x)', 'roas'],
+};
+
+const platformNames = platforms => ['google', 'meta'].filter(p => platforms.has(p)).map(p => PLATFORM_LABEL[p]).join(' + ');
+
+/** Columns of the export for the current grouping: {lbl, f: number format or 'text', get(line), total(TABLE.total)}. */
+function exportColumns() {
+  const text = state.group === 'campaign'
+    ? [['Campaign', l => l.name], ['Nền tảng', l => platformNames(l.platforms)], ['Tài khoản', l => l.account],
+      ['Page', l => l.page], ['Loại kết quả', l => l.result], ['Kết quả', l => l.res, 'num']]
+    : [[state.group === 'page' ? 'Page' : 'Tài khoản', l => l.name], ['Nền tảng', l => platformNames(l.platforms)],
+      ['Campaign có chi tiêu', l => l.nCamp, 'int']];
+  return [
+    ...text.map(([lbl, get, f = 'text']) => ({ lbl, f, get, total: () => null })), // mixed result types: no total
+    ...METRIC_COLS.map(c => ({ lbl: EXPORT_METRICS[c.k][0], f: EXPORT_METRICS[c.k][1], get: l => l[c.k], total: t => t[c.k] })),
+  ];
+}
+
+/** Header, one row per line, then the totals row; first cell of the totals row says how many lines it sums. */
+function exportGrid(cols) {
+  const totalRow = cols.map((c, i) => (i ? c.total(TABLE.total) : `Tổng (${TABLE.lines.length} dòng)`));
+  return [cols.map(c => c.lbl), ...TABLE.lines.map(l => cols.map(c => c.get(l))), totalRow];
+}
+
+const exportFileName = ext => `ads-chi-tiet-${state.group}-${state.from}-den-${state.to}.${ext}`;
+
+function downloadBlob(blob, fileName) {
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), { href: url, download: fileName });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/** CSV value: ratios as percent, 2 decimals at most, dot decimal; text that a spreadsheet would run as a formula gets a '. */
+function csvValue(v, f) {
+  if (v == null || (typeof v === 'number' && !Number.isFinite(v))) return '';
+  if (f === 'text') {
+    const s = String(v).replace(/^[=+\-@\t\r]/, "'$&");
+    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  }
+  return String(Math.round((f === 'pct' ? v * 100 : v) * 100) / 100);
+}
+
+function exportCsv() {
+  const cols = exportColumns();
+  const grid = exportGrid(cols);
+  const lines = grid.map((r, i) => r.map((v, j) => csvValue(v, i ? cols[j].f : 'text')).join(','));
+  downloadBlob(new Blob(['\uFEFF' + lines.join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' }), exportFileName('csv'));
+}
+
+function exportXlsx() {
+  const cols = exportColumns();
+  const grid = exportGrid(cols);
+  const unit = GROUPS[state.group].unit;
+  const title = [
+    ['Báo cáo quảng cáo · All The Day Group'],
+    [`Chi tiết theo ${unit} · ${scopeText()} · ${fmtDate(state.from)} → ${fmtDate(state.to)} (${daysBetween(state.from, state.to)} ngày)` +
+      (state.search ? ` · tìm "${state.search}"` : '')],
+    [`Số liệu build ${PAYLOAD.generated_at.replace('T', ' ')} · Tỷ lệ tổng = tổng ÷ tổng`],
+    [],
+  ];
+  const cells = grid.map((r, i) => (i ? r.map((v, j) => (cols[j].f === 'text' || v == null ? v : { v, f: cols[j].f })) : r));
+  const rows = [...title, ...cells];
+  const header = title.length, last = rows.length - 1;
+  const widths = cols.map((c, j) => (c.f === 'text'
+    ? Math.min(60, Math.max(12, ...grid.map(r => String(r[j] ?? '').length + 2))) : Math.max(12, c.lbl.length + 2)));
+  const blob = xlsxBlob(`Chi tiết ${unit}`, rows, { bold: new Set([0, header, last]), freeze: header + 1, widths });
+  downloadBlob(blob, exportFileName('xlsx'));
+}
+
+function initTableExport() {
+  document.getElementById('export-csv').addEventListener('click', exportCsv);
+  document.getElementById('export-xlsx').addEventListener('click', exportXlsx);
+}
+
+// ---------- Alerts: campaigns that stopped spending, spend without results, CPA up, spend drop, a CPC spike day ----------
+// Campaign level, under the page/platform/account filters (not the table search): selected range vs the previous one.
+
+const ALERT = {
+  minSpend: 100000,  // ₫ in the range or the previous one: smaller campaigns are not judged
+  daySpend: 1000,    // ₫: a day below this counts as no spend (a paused Google campaign can still bill a few ₫)
+  stopDays: 3,       // no spend for this many days up to the end of the range (inside the pulled data) = stopped
+  cpaUp: 0.5,        // CPA +50% vs the previous period...
+  minConv: 5,        // ...when both periods have at least this many conversions
+  spendDrop: 0.4,    // spend −40% vs the previous period
+  spikeCpc: 5,       // a day whose CPC is 5x the campaign's usual (median) CPC...
+  spikeSpend: 50000, // ...and that spent at least this much (or got no click at all)
+};
+const ALERT_ORDER = { bad: 0, warn: 1 };
+
+/** Last day an account's data was pulled for (its own, else its platform's): no row after it means "not pulled". */
+function pulledUntil(a) {
+  const spans = COVERAGE[ACCOUNTS[a].p] || [];
+  return ACCOUNTS[a].u || (spans.length ? spans[spans.length - 1][1] : MAX_DATE);
+}
+
+const median = xs => { const s = [...xs].sort((a, b) => a - b), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+
+/** [{ci, level: 'bad'|'warn', tag, detail, spend}] sorted bad first, then by spend in the range. */
+function campaignAlerts(from, to) {
+  const f = { page: state.page, platform: state.platform, account: state.account };
+  const [pf] = previousRange(from, to);
+  const byCampaign = new Map(); // rows are sorted by date, so each campaign's rows are too
+  for (const r of filterRows(f, pf, to)) {
+    if (!byCampaign.has(r[0])) byCampaign.set(r[0], []);
+    byCampaign.get(r[0]).push(r);
+  }
+  const out = [];
+  for (const [ci, rows] of byCampaign) {
+    const curRows = rows.filter(r => r[1] >= from);
+    const cur = aggregate(curRows), prev = aggregate(rows.filter(r => r[1] < from));
+    if (Math.max(cur.spend, prev.spend) < ALERT.minSpend) continue;
+    const c = CAMPAIGNS[ci];
+    const add = (level, tag, detail) => out.push({ ci, level, tag, detail, spend: cur.spend });
+
+    const end = to < pulledUntil(c.a) ? to : pulledUntil(c.a);
+    // data stops before the range ends (a failed pull): comparing a cut-short range with a full one would cry wolf
+    const partial = end < to;
+    const spentDays = rows.filter(r => r[2] >= ALERT.daySpend && r[1] <= end).map(r => r[1]);
+    const last = spentDays[spentDays.length - 1];
+    const gap = last ? daysBetween(last, end) - 1 : 0;
+    const stopped = gap >= ALERT.stopDays;
+    if (stopped) {
+      add('bad', 'Ngừng chi tiêu', `Không chi tiêu từ ${fmtDate(addDays(last, 1))} (${gap} ngày tính đến ${fmtDate(end)}); ` +
+        `khoảng này tiêu ${fmtVndShort(cur.spend)}, kỳ trước ${fmtVndShort(prev.spend)}`);
+    }
+    if (!partial && cur.spend >= ALERT.minSpend && !cur.res) {
+      add('bad', 'Tốn tiền, 0 kết quả', `Tiêu ${fmtVnd(cur.spend)} trong khoảng này, 0 kết quả (${c.rl})`);
+    }
+    if (!partial && cur.conv >= ALERT.minConv && prev.conv >= ALERT.minConv && prev.spend >= ALERT.minSpend &&
+        cur.cpa >= prev.cpa * (1 + ALERT.cpaUp)) {
+      add('warn', 'CPA tăng', `CPA ${fmtVnd(cur.cpa)}, kỳ trước ${fmtVnd(prev.cpa)} (+${fmtPct(cur.cpa / prev.cpa - 1, 0)})`);
+    }
+    if (!partial && !stopped && prev.spend >= ALERT.minSpend && cur.spend <= prev.spend * (1 - ALERT.spendDrop)) {
+      add('warn', 'Chi tiêu giảm', `${fmtVndShort(prev.spend)} → ${fmtVndShort(cur.spend)} so với kỳ trước ` +
+        `(−${fmtPct(1 - cur.spend / prev.spend, 0)}); kết quả ${fmtNum(prev.res)} → ${fmtNum(cur.res)}`);
+    }
+    const cpcs = curRows.filter(r => r[4] >= 5).map(r => r[2] / r[4]);
+    if (cpcs.length >= 5) {
+      const usual = median(cpcs);
+      const cpc = r => (r[4] ? r[2] / r[4] : Infinity);
+      const worst = curRows.filter(r => r[2] >= ALERT.spikeSpend && cpc(r) >= ALERT.spikeCpc * usual)
+        .sort((a, b) => cpc(b) - cpc(a))[0];
+      if (worst) {
+        add('warn', 'Ngày bất thường', `${fmtDate(worst[1])}: tiêu ${fmtVnd(worst[2])} cho ${fmtInt(worst[4])} nhấp` +
+          (worst[4] ? ` (CPC ${fmtVnd(cpc(worst))}, thường ~${fmtVnd(usual)})` : ` (CPC thường ~${fmtVnd(usual)})`));
+      }
+    }
+  }
+  return out.sort((a, b) => ALERT_ORDER[a.level] - ALERT_ORDER[b.level] || b.spend - a.spend);
+}
+
+function renderAlerts(from, to) {
+  const list = campaignAlerts(from, to);
+  document.getElementById('alerts-count').textContent = list.length ? ` (${list.length})` : '';
+  document.getElementById('alerts-note').textContent =
+    `Theo campaign, so với ${previousRange(from, to).map(fmtDate).join(' → ')} · bấm tên để xem xu hướng`;
+  document.getElementById('alerts').innerHTML = list.length ? list.map(a => {
+    const c = CAMPAIGNS[a.ci];
+    return `<li class="alert ${a.level}"><span class="alert-tag">${a.tag}</span><div class="alert-body">
+      <span class="name-wrap">${pills(new Set([ACCOUNTS[c.a].p]))}<button type="button" class="row-link" data-camp="${a.ci}"
+        title="${esc(c.n)} · xem xu hướng">${esc(c.n)}</button></span>
+      <span class="alert-detail">${esc(a.detail)}</span></div></li>`;
+  }).join('') : '<li class="alert ok">✓ Không phát hiện bất thường trong khoảng này.</li>';
+}
+
+function initAlerts() {
+  document.getElementById('alerts').addEventListener('click', e => {
+    const b = e.target.closest('button[data-camp]');
+    if (b) openDrill({ group: 'campaign', key: +b.dataset.camp, name: CAMPAIGNS[+b.dataset.camp].n, fromTable: false });
+  });
+}
+
+// ---------- Drill-down: click a line of the detail table → its KPIs vs the previous period + spend/result trend ----------
+
+let drill = null; // {group, key, name, fromTable} of the line in the open dialog (renderAll redraws it, e.g. on an OS theme change)
+
+/** The drilled line's rows in [from, to]: same filters as the page (+ the table search when opened from the table). */
+function drillRows(from, to) {
+  const keyOf = GROUPS[drill.group].key;
+  const rows = filterRows(state, from, to);
+  return (drill.fromTable ? searchRows(rows) : rows).filter(r => keyOf(r) === drill.key);
+}
+
+function renderDrill() {
+  const rows = drillRows(state.from, state.to);
+  const [pf, pt] = previousRange(state.from, state.to);
+  const cur = aggregate(rows), prev = aggregate(drillRows(pf, pt));
+  const c = drill.group === 'campaign' ? CAMPAIGNS[drill.key] : null;
+  const platforms = ['google', 'meta'].filter(p => rows.some(r => platformOfRow(r) === p));
+  const live = rows.filter(r => r[2] > 0);
+
+  document.getElementById('drill-title').innerHTML = `${pills(new Set(platforms))} ${esc(drill.name)}`;
+  const facts = c ? [`Page: ${c.pg}`, `Tài khoản: ${ACCOUNTS[c.a].name}`, `Kết quả: ${c.rl}`]
+    : [`${new Set(live.map(r => r[0])).size} campaign có chi tiêu`];
+  facts.push(`chi tiêu ${new Set(live.map(r => r[1])).size}/${daysBetween(state.from, state.to)} ngày`);
+  if (drill.fromTable && state.search) facts.push(`tìm "${state.search}"`);
+  document.getElementById('drill-sub').innerHTML = esc(facts.join(' · ')) +
+    `<br>${fmtDate(state.from)} → ${fmtDate(state.to)} · so với ${[pf, pt].map(fmtDate).join(' → ')}`;
+
+  // a campaign whose result type is not a conversion (ThruPlay, engagement...) gets its own results tile
+  const extra = c && (cur.res !== cur.conv || prev.res !== prev.conv) ? [{ k: 'res', lbl: 'Kết quả · ' + c.rl, fmt: fmtNum }] : [];
+  const defs = [...KPI_DEFS.filter(d => d.k !== 'roas' || cur.roas != null || prev.roas != null), ...extra];
+  document.getElementById('drill-kpis').innerHTML = defs.map(d => `<div class="mini"><div class="lbl">${esc(d.lbl)}</div>
+    <div class="val" title="${esc((d.full || d.fmt)(cur[d.k]))}">${d.fmt(cur[d.k])}</div>${deltaBadge(d, cur[d.k], prev[d.k])}</div>`).join('');
+
+  const chart = document.getElementById('drill-chart');
+  chart.hidden = typeof Chart === 'undefined'; // offline: tiles only
+  if (chart.hidden) return;
+  // a campaign plots its own result type (= its conversions when that type counts); a page/account plots conversions
+  const line = c ? { col: 7, label: `Kết quả (${c.rl})` } : undefined;
+  renderSpendTrend('c-drill', 'drill-legend', rows, state.from, state.to, platforms, line);
+}
+
+/** target: {group: 'campaign'|'page'|'account', key, name, fromTable: opened from the detail table} */
+function openDrill(target) {
+  drill = target;
+  document.getElementById('drill').showModal(); // first: Chart.js sizes the canvas from its box, which is 0×0 while closed
+  renderDrill();
+}
+
+function initDrill() {
+  const dlg = document.getElementById('drill');
+  document.getElementById('table-wrap').addEventListener('click', e => {
+    const b = e.target.closest('button[data-line]');
+    const line = b && TABLE.lines[+b.dataset.line];
+    if (line) openDrill({ group: state.group, key: line.key, name: line.name, fromTable: true });
+  });
+  document.getElementById('drill-close').addEventListener('click', () => dlg.close());
+  // the dialog box itself is only its backdrop; a text selection dragged out of the dialog must not close it
+  let pressedBackdrop = false;
+  dlg.addEventListener('pointerdown', e => { pressedBackdrop = e.target === dlg; });
+  dlg.addEventListener('click', e => { if (pressedBackdrop && e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', () => {
+    // opened from the table and redrawn while open: its button was replaced, give focus to the line's new button
+    // (opened from an alert: the browser puts focus back on the alert by itself)
+    if (drill.fromTable && drill.group === state.group) {
+      const i = TABLE.lines.findIndex(l => l.key === drill.key);
+      document.querySelector(`#table-wrap button[data-line="${i}"]`)?.focus();
+    }
+    drill = null;
+    if (CHARTS['c-drill']) { CHARTS['c-drill'].destroy(); delete CHARTS['c-drill']; }
+  });
+}
+
+// ---------- Bootstrap: theme toggle, render everything for the current filter state ----------
+
+let currentRows = [];
+
+/** Platforms that have data under the current page/platform/account filters (any date). */
+function activePlatforms() {
+  const present = new Set(filterRows(state, MIN_DATE, MAX_DATE).map(platformOfRow));
+  return ['google', 'meta'].filter(p => present.has(p));
+}
+
+/** Warn when the selected range or its comparison period runs outside the dates a platform was pulled for. */
+function renderCoverageWarning() {
+  const [prevFrom] = previousRange(state.from, state.to);
+  // ranges are merged, so a fully covered window lies inside a single one of them
+  const covered = spans => spans.some(([s, e]) => s <= prevFrom && state.to <= e);
+  const notes = Object.entries(COVERAGE)
+    .filter(([p, spans]) => activePlatforms().includes(p) && !covered(spans))
+    .map(([p, spans]) => `${PLATFORM_LABEL[p]} chỉ có dữ liệu ${spans.map(([s, e]) => fmtDate(s) + ' → ' + fmtDate(e)).join(', ')}`);
+  const el = document.getElementById('coverage-warn');
+  el.hidden = !notes.length;
+  el.textContent = notes.length ? '⚠ ' + notes.join(' · ') + ': ngoài khoảng này (kể cả kỳ so sánh) số liệu nền tảng đó = 0 do chưa lấy, không phải không chạy.' : '';
+}
+
+// fresh data ends yesterday, or the day before until the morning refresh has run (refresh-dashboard.py)
+const STALE_AFTER_DAYS = 2;
+
+/** Today in Vietnam (the ad accounts' time zone), whatever time zone the viewer's device is set to. */
+function todayInVietnam() {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(new Date());
+  const p = Object.fromEntries(parts.map(x => [x.type, x.value]));
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+/** Warn when a platform's pulled data ends more than STALE_AFTER_DAYS days ago (the daily refresh did not run). */
+function renderStaleWarning(today = todayInVietnam()) {
+  const byLast = new Map(); // last pulled day -> platforms, so one sentence covers platforms that stopped together
+  for (const [p, spans] of Object.entries(COVERAGE)) {
+    const last = spans.length ? spans[spans.length - 1][1] : null; // merged and sorted: the last span ends last
+    if (last && daysBetween(last, today) - 1 > STALE_AFTER_DAYS) byLast.set(last, [...(byLast.get(last) || []), PLATFORM_LABEL[p]]);
+  }
+  const notes = [...byLast].map(([last, names]) => `${names.join(', ')} mới có đến ${fmtDate(last)} (${daysBetween(last, today) - 1} ngày trước)`);
+  const el = document.getElementById('stale-warn');
+  el.hidden = !notes.length;
+  el.textContent = notes.length ? `⚠ Số liệu chưa được cập nhật: ${notes.join(' · ')}. Các ngày sau đó chưa có trên trang.` : '';
+}
+
+/** Page + accounts the filters select, as plain text (escape before putting it in HTML). */
+function scopeText() {
+  const accounts = state.account !== 'all' ? ACCOUNTS[+state.account].name
+    : state.platform === 'all' ? 'Tất cả tài khoản' : 'Tất cả tài khoản ' + PLATFORM_LABEL[state.platform];
+  return (state.page === 'all' ? '' : state.page + ' · ') + accounts;
+}
+
+function renderHeroSub() {
+  document.getElementById('hero-sub').innerHTML =
+    `<b>${esc(scopeText())}</b> · ${fmtDate(state.from)} → ${fmtDate(state.to)} (${daysBetween(state.from, state.to)} ngày) · ` +
+    `so với ${previousRange(state.from, state.to).map(fmtDate).join(' → ')}`;
+}
+
+function renderAll(opts = {}) {
+  if (!opts.tableOnly) {
+    currentRows = filterRows(state, state.from, state.to);
+    const [pf, pt] = previousRange(state.from, state.to);
+    renderHeroSub();
+    renderCoverageWarning();
+    renderKpis(aggregate(currentRows), aggregate(filterRows(state, pf, pt)));
+    renderAlerts(state.from, state.to);
+    if (typeof Chart !== 'undefined') { // offline: tables still render
+      applyChartDefaults(themeColors());
+      renderTrend(currentRows, state.from, state.to, activePlatforms());
+    }
+    renderPlatformCompare(state.from, state.to);
+    renderGoogleActions(state.from, state.to);
+  }
+  renderBreakdown(currentRows);
+  if (drill && document.getElementById('drill').open) renderDrill(); // 'close' fires a moment after close()
+}
+
+function renderFoot() {
+  const meta = PAYLOAD.meta_pulled_at ? `Meta lấy lúc ${PAYLOAD.meta_pulled_at.replace('T', ' ')}` : 'chưa có dữ liệu Meta';
+  document.getElementById('foot').innerHTML =
+    `Dữ liệu ${fmtDate(MIN_DATE)} → ${fmtDate(MAX_DATE)} · ${meta} · build ${PAYLOAD.generated_at.replace('T', ' ')} · ` +
+    'Nguồn: Meta Marketing API (insights theo ngày/campaign) và Google Ads API (theo ngày/campaign/hành động). ' +
+    'Lượt nhấp = tất cả lượt nhấp (Meta: clicks all). CTR = nhấp ÷ hiển thị · CPC = chi phí ÷ nhấp · CPA = chi phí ÷ chuyển đổi · ' +
+    'ROAS = giá trị chuyển đổi ÷ chi phí (Meta: giá trị mua hàng omni_purchase; Google: conversions value). ' +
+    'Kết quả Meta = cột Kết quả của Ads Manager (loại kết quả chính của campaign). Chuyển đổi Meta = kết quả loại tin nhắn, lead, ' +
+    'mua hàng, sự kiện pixel; ThruPlay/tương tác/lượt thích không tính. Chuyển đổi Google = hành động trên Maps: chỉ đường + gọi điện + ' +
+    'nhấp vào website (all conversions theo hành động); xem menu và tương tác khác chỉ hiển thị, không tính. ' +
+    'Mọi tỷ lệ tổng = tổng ÷ tổng. Ngày theo múi giờ của từng tài khoản quảng cáo.';
+}
+
+function initTheme() {
+  const root = document.documentElement;
+  try { const saved = localStorage.getItem('ads-theme'); if (saved) root.dataset.theme = saved; } catch (e) { /* storage blocked */ }
+  document.getElementById('theme-btn').addEventListener('click', () => {
+    const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('ads-theme', root.dataset.theme); } catch (e) { /* ignore */ }
+    if (ROWS.length) renderAll(); // no data: nothing to redraw (and no date range set)
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!root.dataset.theme && ROWS.length) renderAll(); });
+}
+
+initTheme();
+if (!ROWS.length) {
+  document.querySelector('.page').insertAdjacentHTML('beforeend',
+    '<div class="card empty">Chưa có dữ liệu. Chạy <code>python scripts/pull-meta-ads.py</code> rồi <code>python scripts/build-dashboard.py</code>.</div>');
+  document.querySelectorAll('.filters, .kpis, .card:not(.empty)').forEach(n => { n.hidden = true; });
+} else {
+  initFilters(renderAll);
+  initTableExport();
+  initAlerts();
+  initDrill();
+  renderFoot();
+  renderAll();
+  try { renderStaleWarning(); } catch (e) { /* browser without time-zone data: skip the warning, keep the page */ }
+}
+
+  </script>
